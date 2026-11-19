@@ -1,0 +1,14 @@
+{
+  "entrada": {
+    "nome": "Feira",
+    "data": "2026-10-25",
+    "horario": "99:99",
+    "local": "Brasília",
+    "vagas": 100,
+    "status": "Inventado"
+  },
+  "resultado": {
+    "valid": true,
+    "errors": []
+  }
+}

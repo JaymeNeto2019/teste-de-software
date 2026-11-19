@@ -1,0 +1,63 @@
+name: Organizar codigo do ZIP na branch
+
+on:
+  push:
+    branches: [organizacao-projeto]
+    paths:
+      - '.github/workflows/organizar-projeto.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  extrair-projeto:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout da branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Extrair projeto com verificacao de caminhos
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import zipfile
+          from pathlib import Path
+          zip_path = Path("Repositorio_Parte_02_Final.zip")
+          allowed = {".gitignore", "COMO_SUBIR_NO_GITHUB.txt", "PASSO_A_PASSO.md", "README.md", "package.json", "package-lock.json", "cypress.config.js"}
+          dirs = ("src/", "public/", "tests/", "cypress/", "postman/", "evidencias/", "docs/")
+          with zipfile.ZipFile(zip_path) as archive:
+              for entry in archive.infolist():
+                  name = entry.filename
+                  path = Path(name)
+                  if entry.is_dir():
+                      continue
+                  if path.is_absolute() or ".." in path.parts or "\\" in name:
+                      raise ValueError(f"Caminho inseguro no ZIP: {name}")
+                  if name not in allowed and not name.startswith(dirs):
+                      raise ValueError(f"Arquivo inesperado no ZIP: {name}")
+                  destination = Path.cwd() / path
+                  destination.parent.mkdir(parents=True, exist_ok=True)
+                  destination.write_bytes(archive.read(entry))
+                  print("Extraido:", name)
+          PY
+      - name: Atualizar README com link do repositorio atual
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("README.md")
+          content = p.read_text(encoding="utf-8")
+          content = content.replace("O repositório remoto não foi atualizado automaticamente.", "O código-fonte foi publicado nesta branch a partir do pacote original, preservando os arquivos da raiz.")
+          p.write_text(content, encoding="utf-8")
+          PY
+      - name: Publicar codigo extraido
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .gitignore COMO_SUBIR_NO_GITHUB.txt PASSO_A_PASSO.md README.md package.json package-lock.json cypress.config.js src public tests cypress postman evidencias docs
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: publica codigo e evidencias do pacote original"
+            git push
+          fi

@@ -1,0 +1,12 @@
+1. Extraia este ZIP em uma pasta nova. Não extraia por cima da pasta em que você executou os testes.
+2. Na pasta original usada nos testes, abra evidencias e copie todos os arquivos cujo nome começa com cypress- e termina com .xml.
+3. Cole esses XML na pasta evidencias deste pacote. Não altere seu conteúdo.
+4. Abra https://github.com/JaymeNeto2019/sistema-gerenciamento-eventos
+5. Na página principal do repositório, clique em Add file > Upload files.
+6. Abra a pasta extraída, selecione os arquivos e pastas internos e arraste para a área de upload. Envie o conteúdo extraído, não apenas o ZIP. Mantenha src, public, tests, cypress, postman, evidencias e docs na raiz do repositório.
+7. Aguarde o upload, escreva “Entrega Parte 02: testes, relatório e evidências” e clique em Commit changes.
+8. Se o arquivo antigo evidencias/cypress-pendente.txt já estiver no GitHub, exclua-o pelo menu do arquivo e confirme o commit: o upload de uma pasta não remove arquivos antigos automaticamente.
+9. Confira README, docs/Relatorio_Final_Parte_02.pdf e evidencias/RESULTADOS.md no GitHub.
+10. O pacote conserva o código e os testes já usados. Não é necessário instalar dependências ou executar novamente para publicar os arquivos.
+
+Os XML não foram fornecidos nesta conversa e não foram fabricados. O relatório distingue os resultados automáticos disponíveis, o trecho visível no vídeo e o total informado pelo grupo. As responsabilidades na seção 3 permanecem propostas; o grupo deve confirmar sua divisão. Átila está identificado pelo nome fornecido.

@@ -1,0 +1,87 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sistema-gerenciamento-eventos@1.0.0 test:postman
+> newman run postman/Sistema_Eventos.postman_collection.json -r cli,json,junit --reporter-json-export evidencias/newman.json --reporter-junit-export evidencias/newman.xml
+
+(node:68) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+newman
+
+Sistema de Gerenciamento de Eventos
+
+→ 01 - Health check
+  GET http://localhost:3000/api/health [200 OK, 302B, 23ms]
+  ✓  Status 200
+  ✓  API está online
+
+→ 02 - CT-022 Login válido
+  POST http://localhost:3000/api/login [200 OK, 464B, 87ms]
+  ✓  Status 200
+  ✓  Retorna token
+
+→ 03 - CT-023 Login inválido
+  POST http://localhost:3000/api/login [401 Unauthorized, 282B, 87ms]
+  ✓  Status 401
+  ✓  Mensagem de credenciais inválidas
+
+→ 04 - CT-016 Cadastrar evento válido
+  POST http://localhost:3000/api/events [201 Created, 540B, 6ms]
+  ✓  Status 201
+  ✓  Evento cadastrado
+
+→ 05 - CT-017 Cadastro sem nome
+  POST http://localhost:3000/api/events [400 Bad Request, 330B, 3ms]
+  ✓  Status 400
+  ✓  Nome obrigatório
+
+→ 06 - CT-018 Consultar eventos
+  GET http://localhost:3000/api/events [200 OK, 483B, 3ms]
+  ✓  Status 200
+  ✓  Retorna uma lista
+
+→ 07 - CT-019 Editar evento
+  PUT http://localhost:3000/api/events/1 [200 OK, 589B, 3ms]
+  ✓  Status 200
+  ✓  Nome atualizado
+
+→ 08 - CT-021 Evento inexistente
+  GET http://localhost:3000/api/events/999999 [404 Not Found, 279B, 3ms]
+  ✓  Status 404
+  ✓  Evento não encontrado
+
+→ 09 - CT-020 Excluir evento
+  DELETE http://localhost:3000/api/events/1 [200 OK, 278B, 4ms]
+  ✓  Status 200
+  ✓  Exclusão concluída
+
+→ CT-035 Rejeita horario inválido
+  POST http://localhost:3000/api/events [400 Bad Request, 393B, 3ms]
+  ✓  Rejeita dados inválidos
+
+→ CT-036 Rejeita status inválido
+  POST http://localhost:3000/api/events [400 Bad Request, 367B, 3ms]
+  ✓  Rejeita dados inválidos
+
+→ CT-037 Bloqueia API sem token
+  GET http://localhost:3000/api/events [401 Unauthorized, 287B, 2ms]
+  ✓  Sem token retorna 401
+
+┌─────────────────────────┬──────────────────┬──────────────────┐
+│                         │         executed │           failed │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│              iterations │                1 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│                requests │               12 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│            test-scripts │               12 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│      prerequest-scripts │                0 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│              assertions │               21 │                0 │
+├─────────────────────────┴──────────────────┴──────────────────┤
+│ total run duration: 406ms                                     │
+├───────────────────────────────────────────────────────────────┤
+│ total data received: 1.71kB (approx)                          │
+├───────────────────────────────────────────────────────────────┤
+│ average response time: 18ms [min: 2ms, max: 87ms, s.d.: 30ms] │
+└───────────────────────────────────────────────────────────────┘

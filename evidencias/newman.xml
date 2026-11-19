@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Sistema de Gerenciamento de Eventos" tests="12" time="0.227">
+  <testsuite name="01 - Health check" id="c7cb8753-d1d7-4fdf-ac62-17e41aa40b03" timestamp="2026-10-21T19:32:31.049Z" tests="2" failures="0" errors="0" time="0.023">
+    <testcase name="Status 200" time="0.023" classname="01HealthCheck"/>
+    <testcase name="API está online" time="0.023" classname="01HealthCheck"/>
+  </testsuite>
+  <testsuite name="02 - CT-022 Login válido" id="43559689-6694-49a9-9368-64ae89b61536" timestamp="2026-10-21T19:32:31.049Z" tests="2" failures="0" errors="0" time="0.087">
+    <testcase name="Status 200" time="0.087" classname="02Ct022LoginValido"/>
+    <testcase name="Retorna token" time="0.087" classname="02Ct022LoginValido"/>
+  </testsuite>
+  <testsuite name="03 - CT-023 Login inválido" id="7c3d0869-ff39-47c8-847c-07e9ce7b9180" timestamp="2026-10-21T19:32:31.049Z" tests="2" failures="0" errors="0" time="0.087">
+    <testcase name="Status 401" time="0.087" classname="03Ct023LoginInvalido"/>
+    <testcase name="Mensagem de credenciais inválidas" time="0.087" classname="03Ct023LoginInvalido"/>
+  </testsuite>
+  <testsuite name="04 - CT-016 Cadastrar evento válido" id="eaca4ce6-48e7-4fe8-a9d0-79be82ce4992" timestamp="2026-10-21T19:32:31.049Z" tests="2" failures="0" errors="0" time="0.006">
+    <testcase name="Status 201" time="0.006" classname="04Ct016CadastrarEventoValido"/>
+    <testcase name="Evento cadastrado" time="0.006" classname="04Ct016CadastrarEventoValido"/>
+  </testsuite>
+  <testsuite name="05 - CT-017 Cadastro sem nome" id="4f9c614f-6279-4f93-8d64-65c27cb311ab" timestamp="2026-10-21T19:32:31.049Z" tests="2" failures="0" errors="0" time="0.003">
+    <testcase name="Status 400" time="0.003" classname="05Ct017CadastroSemNome"/>
+    <testcase name="Nome obrigatório" time="0.003" classname="05Ct017CadastroSemNome"/>
+  </testsuite>
+  <testsuite name="06 - CT-018 Consultar eventos" id="2c490152-05d4-4b0f-8e92-9e1bb5896597" timestamp="2026-10-21T19:32:31.049Z" tests="2" failures="0" errors="0" time="0.003">
+    <testcase name="Status 200" time="0.003" classname="06Ct018ConsultarEventos"/>
+    <testcase name="Retorna uma lista" time="0.003" classname="06Ct018ConsultarEventos"/>
+  </testsuite>
+  <testsuite name="07 - CT-019 Editar evento" id="19424d7b-af89-4403-a668-d833ad8cefb5" timestamp="2026-10-21T19:32:31.049Z" tests="2" failures="0" errors="0" time="0.003">
+    <testcase name="Status 200" time="0.003" classname="07Ct019EditarEvento"/>
+    <testcase name="Nome atualizado" time="0.003" classname="07Ct019EditarEvento"/>
+  </testsuite>
+  <testsuite name="08 - CT-021 Evento inexistente" id="995056fa-1f67-47e5-9926-95c3765e10db" timestamp="2026-10-21T19:32:31.049Z" tests="2" failures="0" errors="0" time="0.003">
+    <testcase name="Status 404" time="0.003" classname="08Ct021EventoInexistente"/>
+    <testcase name="Evento não encontrado" time="0.003" classname="08Ct021EventoInexistente"/>
+  </testsuite>
+  <testsuite name="09 - CT-020 Excluir evento" id="1fd3903f-37f6-48c3-9713-8c03265ff84b" timestamp="2026-10-21T19:32:31.049Z" tests="2" failures="0" errors="0" time="0.004">
+    <testcase name="Status 200" time="0.004" classname="09Ct020ExcluirEvento"/>
+    <testcase name="Exclusão concluída" time="0.004" classname="09Ct020ExcluirEvento"/>
+  </testsuite>
+  <testsuite name="CT-035 Rejeita horario inválido" id="bcf0fb27-a353-464d-a6f2-71d13de8fa44" timestamp="2026-10-21T19:32:31.049Z" tests="1" failures="0" errors="0" time="0.003">
+    <testcase name="Rejeita dados inválidos" time="0.003" classname="Ct035RejeitaHorarioInvalido"/>
+  </testsuite>
+  <testsuite name="CT-036 Rejeita status inválido" id="1eef236c-e16c-464d-97e6-1f07096cde5c" timestamp="2026-10-21T19:32:31.049Z" tests="1" failures="0" errors="0" time="0.003">
+    <testcase name="Rejeita dados inválidos" time="0.003" classname="Ct036RejeitaStatusInvalido"/>
+  </testsuite>
+  <testsuite name="CT-037 Bloqueia API sem token" id="b3856698-b8fb-4986-becb-6d3ccd2b28a3" timestamp="2026-10-21T19:32:31.049Z" tests="1" failures="0" errors="0" time="0.002">
+    <testcase name="Sem token retorna 401" time="0.002" classname="Ct037BloqueiaApiSemToken"/>
+  </testsuite>
+</testsuites>

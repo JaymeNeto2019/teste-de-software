@@ -1,0 +1,40 @@
+name: Validar testes Jest e Newman
+
+on:
+  push:
+    branches: [organizacao-projeto]
+    paths:
+      - '.github/workflows/validar-testes.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DB_PATH: ':memory:'
+      JWT_SECRET: 'chave-de-testes-ci-nao-usar-em-producao'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Executar testes unitarios e de API
+        run: npm test
+      - name: Iniciar servidor e verificar health
+        shell: bash
+        run: |
+          npm start > /tmp/servidor-eventos.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:3000/api/health; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/servidor-eventos.log
+          exit 1
+      - name: Executar colecao Newman
+        run: npm run test:postman
