@@ -1,40 +1,35 @@
-# Sistema de Gerenciamento de Eventos — Teste de Software
+# Sistema de Gerenciamento de Eventos — Parte 02 combinada
 
-Projeto final — Parte 02 | Universidade Católica de Brasília | 2026
+Leia PASSO_A_PASSO.md. Projeto da UCB com HTML/CSS/JS, Express, SQLite e JWT.
 
-## Sobre o trabalho
+## Comandos
+- npm install: instala dependências.
+- npm start: inicia http://localhost:3000. Conta de demonstração usuario@email.com / 123456.
+- npm run test:report: executa 37 testes Jest (14 unitários + 23 API/Supertest); gera evidencias/jest-completo.json. Não exige servidor iniciado.
+- npm run test:unit: 14 testes unitários.
+- npm run test:api: 23 testes API, incluindo seis de regressão das validações.
+- npm run test:bugs: somente os seis testes de regressão; todos devem passar após as correções.
+- npm run test:coverage: executa Jest com relatório de cobertura (opcional).
+- npm run test:postman: 12 requisições Newman, 21 asserções; requer npm start em outro terminal. Gera JSON e XML.
+- npm run cypress:open: interface Cypress.
+- npm run test:e2e: 16 testes Cypress (12 CT + 4 REG), com relatório XML; requer npm start.
 
-Relatório de planejamento, execução e análise de testes de um sistema de gerenciamento de eventos, com funcionalidades de autenticação e gerenciamento de eventos.
+## Resultados desta versão
 
-**Tecnologias descritas no relatório:** HTML, CSS, JavaScript, Node.js, Express, SQLite e JWT.
+- Jest: 37/37 aprovados (14 unitários + 23 API), em três suites.
+- Newman: 12 requisições e 21 asserções sem falhas.
+- Cypress: 16/16 aprovados conforme execução informada pelo grupo. O vídeo comprova 8/8 em complementares.cy.js e termina no início de eventos.cy.js; os XML completos do PC devem complementar a evidência.
+- Total informado: 49 CT distintos aprovados + quatro regressões. Newman repete 11 CT e adiciona um health check; não duplicar a contagem.
 
-**Ferramentas de teste descritas no relatório:** Jest, Supertest, Postman/Newman e Cypress.
+[Resultados e fontes](evidencias/RESULTADOS.md) · [Registro Cypress](evidencias/cypress-execucao.md)
 
-## Arquivos entregues
+## Documentação e apresentação
 
-- [Relatório final em PDF](./Relatorio_Final_Parte_02.pdf)
-- [Relatório final editável em Word](./Relatorio_Final_Parte_02.docx)
-- [Projeto e materiais em ZIP](./Repositorio_Parte_02_Final.zip)
+- [Relatório final em PDF](docs/Relatorio_Final_Parte_02.pdf)
+- [Relatório editável em Word](docs/Relatorio_Final_Parte_02.docx)
+- [Apresentação com vídeos](https://canva.link/fp9ne7crlv6ydrr)
 
-> **Importante:** o código-fonte e as evidências estão entregues como ZIP. Para consultar ou executar o projeto, é necessário baixar e descompactar esse arquivo. Os comandos de execução devem ser conferidos na documentação interna do ZIP.
+## Alterações
+Testes adicionais Supertest, banco isolado em memória, fechamento do banco após os testes, exportação do app sem iniciar servidor ao importar, correções de horário/status/tipos e tratamento JSON de corpo malformado. Nenhum teste de defeito foi excluído do comando principal. Não foi criada proibição de datas passadas, pois essa regra não consta dos requisitos.
 
-## Testes relatados
-
-O relatório descreve **49 casos de teste**: 14 unitários, 23 de API e 12 de interface, além de 4 testes adicionais de regressão. O relatório também menciona execuções com Postman/Newman.
-
-Esses números representam o que foi **documentado pelo grupo**; a presença deste README não constitui uma nova execução nem validação independente dos testes.
-
-## Organização desta branch
-
-A branch `organizacao-projeto` foi criada para melhorar a apresentação da entrega **sem modificar os três arquivos originais**.
-
-### Pendências para validação final
-
-- Conferir o conteúdo do ZIP e publicar o código-fonte em pastas navegáveis, caso desejado.
-- Executar os comandos de instalação e as suítes de testes em ambiente limpo.
-- Consolidar as evidências completas de execução do Cypress.
-- Conferir a referência ao repositório no próprio relatório, para que a URL corresponda à entrega atual.
-
-## Repositório
-
-https://github.com/JaymeNeto2019/teste-de-software
+DB_PATH é opcional; padrão data/events.db. Os testes Supertest usam :memory:. Não envie node_modules, bancos .db ou tokens ao GitHub. O código-fonte foi publicado nesta branch a partir do pacote original, preservando os arquivos da raiz.

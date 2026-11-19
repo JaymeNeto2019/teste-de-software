@@ -1,0 +1,15 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sistema-gerenciamento-eventos@1.0.0 test:report
+> jest --runInBand --json --outputFile=evidencias/jest-completo.json
+
+PASS tests/api/regressao-validacoes.test.js
+PASS tests/api/api.test.js
+PASS tests/unit/validators.test.js
+
+Test Suites: 3 passed, 3 total
+Tests:       37 passed, 37 total
+Snapshots:   0 total
+Time:        1.126 s, estimated 2 s
+Ran all test suites.
+Test results written to: evidencias/jest-completo.json

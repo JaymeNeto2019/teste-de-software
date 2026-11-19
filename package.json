@@ -1,0 +1,42 @@
+{
+  "name": "sistema-gerenciamento-eventos",
+  "version": "1.0.0",
+  "description": "Trabalho Final de Teste de Software - Sistema de Gerenciamento de Eventos",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test:report": "jest --runInBand --json --outputFile=evidencias/jest-completo.json",
+    "test:api": "jest --runInBand tests/api",
+    "test:e2e": "cypress run --reporter junit --reporter-options mochaFile=evidencias/cypress-[hash].xml",
+    "test:unit": "jest --runInBand tests/unit",
+    "test:bugs": "jest --runInBand tests/api/regressao-validacoes.test.js",
+    "test:coverage": "jest --runInBand --coverage",
+    "test:postman": "newman run postman/Sistema_Eventos.postman_collection.json -r cli,json,junit --reporter-json-export evidencias/newman.json --reporter-junit-export evidencias/newman.xml"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "cypress": "^14.5.4",
+    "jest": "^29.7.0",
+    "newman": "^6.2.3",
+    "supertest": "^7.3.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ]
+  },
+  "allowScripts": {
+    "sqlite3@5.1.7": true,
+    "cypress@14.5.4": true
+  }
+}

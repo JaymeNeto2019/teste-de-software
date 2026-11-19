@@ -1,0 +1,4380 @@
+{
+  "collection": {
+    "item": [
+      {
+        "id": "c7cb8753-d1d7-4fdf-ac62-17e41aa40b03",
+        "name": "01 - Health check",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "health"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "b92388d6-eb75-4c0b-ba4b-c0232e45115c",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                "pm.test('API está online', function () { pm.expect(pm.response.json().status).to.eql('ok'); });"
+              ],
+              "_lastExecutionId": "b871fd9e-ebf1-4bc7-b2cb-599b2d9754fb"
+            }
+          }
+        ]
+      },
+      {
+        "id": "43559689-6694-49a9-9368-64ae89b61536",
+        "name": "02 - CT-022 Login válido",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "login"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"usuario@email.com\",\n  \"senha\": \"123456\"\n}"
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "f05b172f-99d0-4431-adc6-f1bdc26eea99",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                "const body = pm.response.json();",
+                "pm.test('Retorna token', function () { pm.expect(body.token).to.be.a('string'); });",
+                "if (body.token) pm.collectionVariables.set('token', body.token);"
+              ],
+              "_lastExecutionId": "e14fbe39-ea43-4c79-a110-4edb918ffc54"
+            }
+          }
+        ]
+      },
+      {
+        "id": "7c3d0869-ff39-47c8-847c-07e9ce7b9180",
+        "name": "03 - CT-023 Login inválido",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "login"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"usuario@email.com\",\n  \"senha\": \"senhaerrada\"\n}"
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "e73173d0-656f-42cd-a750-bb715cd32ab2",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 401', function () { pm.response.to.have.status(401); });",
+                "pm.test('Mensagem de credenciais inválidas', function () { pm.expect(pm.response.json().message).to.include('Credenciais inválidas'); });"
+              ],
+              "_lastExecutionId": "5231be9d-3496-4d26-9bdc-e665eb1eab47"
+            }
+          }
+        ]
+      },
+      {
+        "id": "eaca4ce6-48e7-4fe8-a9d0-79be82ce4992",
+        "name": "04 - CT-016 Cadastrar evento válido",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "events"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"nome\": \"Feira de Tecnologia\",\n  \"descricao\": \"Evento sobre inovação e tecnologia\",\n  \"data\": \"2026-10-25\",\n  \"horario\": \"19:00\",\n  \"local\": \"Brasília\",\n  \"vagas\": 100,\n  \"status\": \"Ativo\"\n}"
+          },
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "{{token}}",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "01d49fde-ca23-406d-8f71-6a86a2a1a330",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                "const body = pm.response.json();",
+                "pm.test('Evento cadastrado', function () { pm.expect(body.event.nome).to.eql('Feira de Tecnologia'); });",
+                "if (body.event && body.event.id) pm.collectionVariables.set('eventId', body.event.id);"
+              ],
+              "_lastExecutionId": "fb404973-a73e-40e7-a5dd-10ce2bb20565"
+            }
+          }
+        ]
+      },
+      {
+        "id": "4f9c614f-6279-4f93-8d64-65c27cb311ab",
+        "name": "05 - CT-017 Cadastro sem nome",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "events"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"nome\": \"\",\n  \"descricao\": \"Evento inválido\",\n  \"data\": \"2026-10-25\",\n  \"horario\": \"19:00\",\n  \"local\": \"Brasília\",\n  \"vagas\": 100,\n  \"status\": \"Ativo\"\n}"
+          },
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "{{token}}",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "8aca6386-dda6-40e9-bcde-9ec279a2bdf8",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 400', function () { pm.response.to.have.status(400); });",
+                "pm.test('Nome obrigatório', function () { pm.expect(pm.response.json().message.toLowerCase()).to.include('nome'); });"
+              ],
+              "_lastExecutionId": "b03ab3ae-4f05-4e4a-93c7-93dcb1106682"
+            }
+          }
+        ]
+      },
+      {
+        "id": "2c490152-05d4-4b0f-8e92-9e1bb5896597",
+        "name": "06 - CT-018 Consultar eventos",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "events"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET",
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "{{token}}",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "292d24a1-f2fd-443f-839c-e9004deaca57",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                "pm.test('Retorna uma lista', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+              ],
+              "_lastExecutionId": "921e8e5b-8b58-4555-b364-27fc65666e8e"
+            }
+          }
+        ]
+      },
+      {
+        "id": "19424d7b-af89-4403-a668-d833ad8cefb5",
+        "name": "07 - CT-019 Editar evento",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "events",
+              "{{eventId}}"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "PUT",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"nome\": \"Feira de Tecnologia Atualizada\",\n  \"descricao\": \"Evento atualizado sobre inovação e tecnologia\",\n  \"data\": \"2026-10-25\",\n  \"horario\": \"20:00\",\n  \"local\": \"Centro de Convenções Ulysses Guimarães\",\n  \"vagas\": 150,\n  \"status\": \"Ativo\"\n}"
+          },
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "{{token}}",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "75828986-c2de-4565-8168-8b5ecbf52a7d",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                "pm.test('Nome atualizado', function () { pm.expect(pm.response.json().event.nome).to.include('Atualizada'); });"
+              ],
+              "_lastExecutionId": "08db7a21-01cc-4aea-b081-6cee964c4add"
+            }
+          }
+        ]
+      },
+      {
+        "id": "995056fa-1f67-47e5-9926-95c3765e10db",
+        "name": "08 - CT-021 Evento inexistente",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "events",
+              "999999"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET",
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "{{token}}",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "05d283dc-24fb-463e-874c-ee05ca04cb75",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 404', function () { pm.response.to.have.status(404); });",
+                "pm.test('Evento não encontrado', function () { pm.expect(pm.response.json().message).to.include('não encontrado'); });"
+              ],
+              "_lastExecutionId": "b0587582-fde2-4c15-ae4e-860fec9b7f2b"
+            }
+          }
+        ]
+      },
+      {
+        "id": "1fd3903f-37f6-48c3-9713-8c03265ff84b",
+        "name": "09 - CT-020 Excluir evento",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "events",
+              "{{eventId}}"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "DELETE",
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "{{token}}",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "dcda1ca4-82ec-4225-a4c9-e4a633c08ba5",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                "pm.test('Exclusão concluída', function () { pm.expect(pm.response.json().message).to.include('excluído'); });"
+              ],
+              "_lastExecutionId": "894dba8e-583b-4410-9dc3-c8067c32823c"
+            }
+          }
+        ]
+      },
+      {
+        "id": "bcf0fb27-a353-464d-a6f2-71d13de8fa44",
+        "name": "CT-035 Rejeita horario inválido",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "events"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\"nome\": \"Feira de Tecnologia\", \"descricao\": \"Evento sobre inovação e tecnologia\", \"data\": \"2026-10-25\", \"horario\": \"99:99\", \"local\": \"Brasília\", \"vagas\": 100, \"status\": \"Ativo\"}"
+          },
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "{{token}}",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "d46909c6-e7ca-432a-9286-25ad383e2a42",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Rejeita dados inválidos',()=>pm.response.to.have.status(400));"
+              ],
+              "_lastExecutionId": "be0a95ab-6ac7-43f1-ad79-cceae9005764"
+            }
+          }
+        ]
+      },
+      {
+        "id": "1eef236c-e16c-464d-97e6-1f07096cde5c",
+        "name": "CT-036 Rejeita status inválido",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "events"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\"nome\": \"Feira de Tecnologia\", \"descricao\": \"Evento sobre inovação e tecnologia\", \"data\": \"2026-10-25\", \"horario\": \"19:00\", \"local\": \"Brasília\", \"vagas\": 100, \"status\": \"Inventado\"}"
+          },
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "{{token}}",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "5c5a41ea-bacb-4626-9b8e-2b5ef7d56d28",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Rejeita dados inválidos',()=>pm.response.to.have.status(400));"
+              ],
+              "_lastExecutionId": "d2cb18be-03ef-4612-895c-4c9ede3e3b72"
+            }
+          }
+        ]
+      },
+      {
+        "id": "b3856698-b8fb-4986-becb-6d3ccd2b28a3",
+        "name": "CT-037 Bloqueia API sem token",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "events"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "a3410cc9-ed5a-498a-a23d-a5dbb3326b27",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Sem token retorna 401',()=>pm.response.to.have.status(401));"
+              ],
+              "_lastExecutionId": "26de5405-9582-49e5-aba6-06224fe5df1d"
+            }
+          }
+        ]
+      }
+    ],
+    "event": [],
+    "variable": [
+      {
+        "type": "any",
+        "value": "http://localhost:3000",
+        "key": "baseUrl"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "token"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "eventId"
+      }
+    ],
+    "info": {
+      "_postman_id": "63bc44c9-9592-42cb-aae2-f9d3c54db49c",
+      "name": "Sistema de Gerenciamento de Eventos",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "description": {
+        "content": "Coleção de testes de API para o trabalho final de Teste de Software.",
+        "type": "text/plain"
+      }
+    }
+  },
+  "environment": {
+    "id": "4564b69b-38d6-4423-b65c-4abc5268178c",
+    "values": []
+  },
+  "globals": {
+    "id": "3f81699d-ffc6-4cfb-a781-ee1d9a02d1d1",
+    "values": []
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 12,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 12,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequests": {
+        "total": 12,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 12,
+        "pending": 0,
+        "failed": 0
+      },
+      "tests": {
+        "total": 12,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 21,
+        "pending": 0,
+        "failed": 0
+      },
+      "testScripts": {
+        "total": 12,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequestScripts": {
+        "total": 0,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 18.916666666666668,
+      "responseMin": 2,
+      "responseMax": 87,
+      "responseSd": 30.9339574290491,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1792611151049,
+      "completed": 1792611151455
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 12,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "08b80337-1a84-4497-aac9-d4bcb4238f7b",
+          "httpRequestId": "3f9edd20-17cf-4604-8384-900f8c65f28a"
+        },
+        "item": {
+          "id": "c7cb8753-d1d7-4fdf-ac62-17e41aa40b03",
+          "name": "01 - Health check",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "health"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "b92388d6-eb75-4c0b-ba4b-c0232e45115c",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('API está online', function () { pm.expect(pm.response.json().status).to.eql('ok'); });"
+                ],
+                "_lastExecutionId": "b871fd9e-ebf1-4bc7-b2cb-599b2d9754fb"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "health"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "31cc0648-a9be-471e-aa90-7c94274bc25c",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "64e43d8d-d969-48c1-8262-3b2e62344f58",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "67"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"43-lZFcMIM4XDMtxYEAc/1SIA0K1Ic\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 21 Oct 2026 19:32:31 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              34,
+              111,
+              107,
+              34,
+              44,
+              34,
+              97,
+              112,
+              112,
+              108,
+              105,
+              99,
+              97,
+              116,
+              105,
+              111,
+              110,
+              34,
+              58,
+              34,
+              83,
+              105,
+              115,
+              116,
+              101,
+              109,
+              97,
+              32,
+              100,
+              101,
+              32,
+              71,
+              101,
+              114,
+              101,
+              110,
+              99,
+              105,
+              97,
+              109,
+              101,
+              110,
+              116,
+              111,
+              32,
+              100,
+              101,
+              32,
+              69,
+              118,
+              101,
+              110,
+              116,
+              111,
+              115,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 23,
+          "responseSize": 67
+        },
+        "id": "c7cb8753-d1d7-4fdf-ac62-17e41aa40b03",
+        "assertions": [
+          {
+            "assertion": "Status 200",
+            "skipped": false
+          },
+          {
+            "assertion": "API está online",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "3f739301-da10-435d-bcee-4b4be28308a4",
+          "length": 12,
+          "cycles": 1,
+          "position": 1,
+          "iteration": 0,
+          "httpRequestId": "c4b3d7e5-af0a-4174-9342-e39740eef133"
+        },
+        "item": {
+          "id": "43559689-6694-49a9-9368-64ae89b61536",
+          "name": "02 - CT-022 Login válido",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@email.com\",\n  \"senha\": \"123456\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "f05b172f-99d0-4431-adc6-f1bdc26eea99",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "const body = pm.response.json();",
+                  "pm.test('Retorna token', function () { pm.expect(body.token).to.be.a('string'); });",
+                  "if (body.token) pm.collectionVariables.set('token', body.token);"
+                ],
+                "_lastExecutionId": "e14fbe39-ea43-4c79-a110-4edb918ffc54"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "login"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "74251b71-e87b-492c-877e-b8116bcbf628",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "55",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"usuario@email.com\",\n  \"senha\": \"123456\"\n}"
+          }
+        },
+        "response": {
+          "id": "88795d57-1da4-4e9d-bd0c-e576fbe017d3",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "228"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"e4-bv2SmkrbUzzvakgdNKQjcaj7Spw\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 21 Oct 2026 19:32:31 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              76,
+              111,
+              103,
+              105,
+              110,
+              32,
+              114,
+              101,
+              97,
+              108,
+              105,
+              122,
+              97,
+              100,
+              111,
+              32,
+              99,
+              111,
+              109,
+              32,
+              115,
+              117,
+              99,
+              101,
+              115,
+              115,
+              111,
+              46,
+              34,
+              44,
+              34,
+              116,
+              111,
+              107,
+              101,
+              110,
+              34,
+              58,
+              34,
+              91,
+              84,
+              79,
+              75,
+              69,
+              78,
+              95,
+              68,
+              69,
+              95,
+              84,
+              69,
+              83,
+              84,
+              69,
+              95,
+              82,
+              69,
+              77,
+              79,
+              86,
+              73,
+              68,
+              79,
+              93,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 87,
+          "responseSize": 228
+        },
+        "id": "43559689-6694-49a9-9368-64ae89b61536",
+        "assertions": [
+          {
+            "assertion": "Status 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Retorna token",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "b1bb9a7f-1be4-47a6-b574-a4816059d5b9",
+          "length": 12,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "30addbea-ada6-4dcc-a381-186bd00a4bc3"
+        },
+        "item": {
+          "id": "7c3d0869-ff39-47c8-847c-07e9ce7b9180",
+          "name": "03 - CT-023 Login inválido",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@email.com\",\n  \"senha\": \"senhaerrada\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "e73173d0-656f-42cd-a750-bb715cd32ab2",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('Mensagem de credenciais inválidas', function () { pm.expect(pm.response.json().message).to.include('Credenciais inválidas'); });"
+                ],
+                "_lastExecutionId": "5231be9d-3496-4d26-9bdc-e665eb1eab47"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "login"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "b517c382-761c-44fe-8d59-8cd7f73f85dd",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "60",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"usuario@email.com\",\n  \"senha\": \"senhaerrada\"\n}"
+          }
+        },
+        "response": {
+          "id": "102906a2-51d6-4e78-b292-b943ce65b7e1",
+          "status": "Unauthorized",
+          "code": 401,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "37"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"25-zdtofkBLA6F0wTrIoFY0OWCrAfA\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 21 Oct 2026 19:32:31 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              67,
+              114,
+              101,
+              100,
+              101,
+              110,
+              99,
+              105,
+              97,
+              105,
+              115,
+              32,
+              105,
+              110,
+              118,
+              195,
+              161,
+              108,
+              105,
+              100,
+              97,
+              115,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 87,
+          "responseSize": 37
+        },
+        "id": "7c3d0869-ff39-47c8-847c-07e9ce7b9180",
+        "assertions": [
+          {
+            "assertion": "Status 401",
+            "skipped": false
+          },
+          {
+            "assertion": "Mensagem de credenciais inválidas",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "4b0b0c35-4e9a-45fc-ba63-f64ce75d4c73",
+          "length": 12,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "266d2b6f-7d81-4c65-9863-aec28c34ce03"
+        },
+        "item": {
+          "id": "eaca4ce6-48e7-4fe8-a9d0-79be82ce4992",
+          "name": "04 - CT-016 Cadastrar evento válido",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "events"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Feira de Tecnologia\",\n  \"descricao\": \"Evento sobre inovação e tecnologia\",\n  \"data\": \"2026-10-25\",\n  \"horario\": \"19:00\",\n  \"local\": \"Brasília\",\n  \"vagas\": 100,\n  \"status\": \"Ativo\"\n}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "type": "string",
+                  "value": "{{token}}",
+                  "key": "token"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "01d49fde-ca23-406d-8f71-6a86a2a1a330",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const body = pm.response.json();",
+                  "pm.test('Evento cadastrado', function () { pm.expect(body.event.nome).to.eql('Feira de Tecnologia'); });",
+                  "if (body.event && body.event.id) pm.collectionVariables.set('eventId', body.event.id);"
+                ],
+                "_lastExecutionId": "fb404973-a73e-40e7-a5dd-10ce2bb20565"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "events"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Authorization",
+              "value": "Bearer [TOKEN_DE_TESTE_REMOVIDO]",
+              "system": true
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "a39fc266-2c71-4575-bca0-fc4b19b19d7d",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "197",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"nome\": \"Feira de Tecnologia\",\n  \"descricao\": \"Evento sobre inovação e tecnologia\",\n  \"data\": \"2026-10-25\",\n  \"horario\": \"19:00\",\n  \"local\": \"Brasília\",\n  \"vagas\": 100,\n  \"status\": \"Ativo\"\n}"
+          },
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "[TOKEN_DE_TESTE_REMOVIDO]",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": {
+          "id": "2d098c13-bee0-4fef-b51d-9d275ef47cbb",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "298"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"12a-ASBIUCIKkEYaH2fpTc85DLW1R9M\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 21 Oct 2026 19:32:31 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              69,
+              118,
+              101,
+              110,
+              116,
+              111,
+              32,
+              99,
+              97,
+              100,
+              97,
+              115,
+              116,
+              114,
+              97,
+              100,
+              111,
+              32,
+              99,
+              111,
+              109,
+              32,
+              115,
+              117,
+              99,
+              101,
+              115,
+              115,
+              111,
+              46,
+              34,
+              44,
+              34,
+              101,
+              118,
+              101,
+              110,
+              116,
+              34,
+              58,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              110,
+              111,
+              109,
+              101,
+              34,
+              58,
+              34,
+              70,
+              101,
+              105,
+              114,
+              97,
+              32,
+              100,
+              101,
+              32,
+              84,
+              101,
+              99,
+              110,
+              111,
+              108,
+              111,
+              103,
+              105,
+              97,
+              34,
+              44,
+              34,
+              100,
+              101,
+              115,
+              99,
+              114,
+              105,
+              99,
+              97,
+              111,
+              34,
+              58,
+              34,
+              69,
+              118,
+              101,
+              110,
+              116,
+              111,
+              32,
+              115,
+              111,
+              98,
+              114,
+              101,
+              32,
+              105,
+              110,
+              111,
+              118,
+              97,
+              195,
+              167,
+              195,
+              163,
+              111,
+              32,
+              101,
+              32,
+              116,
+              101,
+              99,
+              110,
+              111,
+              108,
+              111,
+              103,
+              105,
+              97,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              48,
+              45,
+              50,
+              53,
+              34,
+              44,
+              34,
+              104,
+              111,
+              114,
+              97,
+              114,
+              105,
+              111,
+              34,
+              58,
+              34,
+              49,
+              57,
+              58,
+              48,
+              48,
+              34,
+              44,
+              34,
+              108,
+              111,
+              99,
+              97,
+              108,
+              34,
+              58,
+              34,
+              66,
+              114,
+              97,
+              115,
+              195,
+              173,
+              108,
+              105,
+              97,
+              34,
+              44,
+              34,
+              118,
+              97,
+              103,
+              97,
+              115,
+              34,
+              58,
+              49,
+              48,
+              48,
+              44,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              34,
+              65,
+              116,
+              105,
+              118,
+              111,
+              34,
+              44,
+              34,
+              99,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              48,
+              45,
+              50,
+              49,
+              32,
+              49,
+              57,
+              58,
+              51,
+              50,
+              58,
+              51,
+              49,
+              34,
+              44,
+              34,
+              117,
+              112,
+              100,
+              97,
+              116,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              48,
+              45,
+              50,
+              49,
+              32,
+              49,
+              57,
+              58,
+              51,
+              50,
+              58,
+              51,
+              49,
+              34,
+              125,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 6,
+          "responseSize": 298
+        },
+        "id": "eaca4ce6-48e7-4fe8-a9d0-79be82ce4992",
+        "assertions": [
+          {
+            "assertion": "Status 201",
+            "skipped": false
+          },
+          {
+            "assertion": "Evento cadastrado",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "6d2ede05-5859-4487-9371-8775c542ec07",
+          "length": 12,
+          "cycles": 1,
+          "position": 4,
+          "iteration": 0,
+          "httpRequestId": "81aa2743-7f6e-4b83-8f2f-a99052c1751d"
+        },
+        "item": {
+          "id": "4f9c614f-6279-4f93-8d64-65c27cb311ab",
+          "name": "05 - CT-017 Cadastro sem nome",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "events"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"\",\n  \"descricao\": \"Evento inválido\",\n  \"data\": \"2026-10-25\",\n  \"horario\": \"19:00\",\n  \"local\": \"Brasília\",\n  \"vagas\": 100,\n  \"status\": \"Ativo\"\n}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "type": "string",
+                  "value": "{{token}}",
+                  "key": "token"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "8aca6386-dda6-40e9-bcde-9ec279a2bdf8",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Nome obrigatório', function () { pm.expect(pm.response.json().message.toLowerCase()).to.include('nome'); });"
+                ],
+                "_lastExecutionId": "b03ab3ae-4f05-4e4a-93c7-93dcb1106682"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "events"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Authorization",
+              "value": "Bearer [TOKEN_DE_TESTE_REMOVIDO]",
+              "system": true
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "32e15f9d-8f48-4363-a2ad-3c6db2614c35",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "158",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"nome\": \"\",\n  \"descricao\": \"Evento inválido\",\n  \"data\": \"2026-10-25\",\n  \"horario\": \"19:00\",\n  \"local\": \"Brasília\",\n  \"vagas\": 100,\n  \"status\": \"Ativo\"\n}"
+          },
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "[TOKEN_DE_TESTE_REMOVIDO]",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": {
+          "id": "265a1970-a2af-45e7-9e07-25ca5751bf9f",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "86"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"56-A8kWOHnaoQHBJSguYpoosSYGGdo\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 21 Oct 2026 19:32:31 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              79,
+              32,
+              99,
+              97,
+              109,
+              112,
+              111,
+              32,
+              110,
+              111,
+              109,
+              101,
+              32,
+              195,
+              169,
+              32,
+              111,
+              98,
+              114,
+              105,
+              103,
+              97,
+              116,
+              195,
+              179,
+              114,
+              105,
+              111,
+              46,
+              34,
+              44,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              34,
+              58,
+              91,
+              34,
+              79,
+              32,
+              99,
+              97,
+              109,
+              112,
+              111,
+              32,
+              110,
+              111,
+              109,
+              101,
+              32,
+              195,
+              169,
+              32,
+              111,
+              98,
+              114,
+              105,
+              103,
+              97,
+              116,
+              195,
+              179,
+              114,
+              105,
+              111,
+              46,
+              34,
+              93,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 86
+        },
+        "id": "4f9c614f-6279-4f93-8d64-65c27cb311ab",
+        "assertions": [
+          {
+            "assertion": "Status 400",
+            "skipped": false
+          },
+          {
+            "assertion": "Nome obrigatório",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "f1d86248-e755-436e-880c-15a9e3def89d",
+          "length": 12,
+          "cycles": 1,
+          "position": 5,
+          "iteration": 0,
+          "httpRequestId": "9780b089-6aba-46dd-993f-28e45d3debf2"
+        },
+        "item": {
+          "id": "2c490152-05d4-4b0f-8e92-9e1bb5896597",
+          "name": "06 - CT-018 Consultar eventos",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "events"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "type": "string",
+                  "value": "{{token}}",
+                  "key": "token"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "292d24a1-f2fd-443f-839c-e9004deaca57",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Retorna uma lista', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+                ],
+                "_lastExecutionId": "921e8e5b-8b58-4555-b364-27fc65666e8e"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "events"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer [TOKEN_DE_TESTE_REMOVIDO]",
+              "system": true
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "ab9c5691-f221-4454-924c-029e7edf0c77",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET",
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "[TOKEN_DE_TESTE_REMOVIDO]",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": {
+          "id": "cf43c037-82a3-45c3-9d2a-c4c8cf5cac2d",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "247"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"f7-y48y9XNfOpMYw8kQLFoFQQWGE9Y\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 21 Oct 2026 19:32:31 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              91,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              110,
+              111,
+              109,
+              101,
+              34,
+              58,
+              34,
+              70,
+              101,
+              105,
+              114,
+              97,
+              32,
+              100,
+              101,
+              32,
+              84,
+              101,
+              99,
+              110,
+              111,
+              108,
+              111,
+              103,
+              105,
+              97,
+              34,
+              44,
+              34,
+              100,
+              101,
+              115,
+              99,
+              114,
+              105,
+              99,
+              97,
+              111,
+              34,
+              58,
+              34,
+              69,
+              118,
+              101,
+              110,
+              116,
+              111,
+              32,
+              115,
+              111,
+              98,
+              114,
+              101,
+              32,
+              105,
+              110,
+              111,
+              118,
+              97,
+              195,
+              167,
+              195,
+              163,
+              111,
+              32,
+              101,
+              32,
+              116,
+              101,
+              99,
+              110,
+              111,
+              108,
+              111,
+              103,
+              105,
+              97,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              48,
+              45,
+              50,
+              53,
+              34,
+              44,
+              34,
+              104,
+              111,
+              114,
+              97,
+              114,
+              105,
+              111,
+              34,
+              58,
+              34,
+              49,
+              57,
+              58,
+              48,
+              48,
+              34,
+              44,
+              34,
+              108,
+              111,
+              99,
+              97,
+              108,
+              34,
+              58,
+              34,
+              66,
+              114,
+              97,
+              115,
+              195,
+              173,
+              108,
+              105,
+              97,
+              34,
+              44,
+              34,
+              118,
+              97,
+              103,
+              97,
+              115,
+              34,
+              58,
+              49,
+              48,
+              48,
+              44,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              34,
+              65,
+              116,
+              105,
+              118,
+              111,
+              34,
+              44,
+              34,
+              99,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              48,
+              45,
+              50,
+              49,
+              32,
+              49,
+              57,
+              58,
+              51,
+              50,
+              58,
+              51,
+              49,
+              34,
+              44,
+              34,
+              117,
+              112,
+              100,
+              97,
+              116,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              48,
+              45,
+              50,
+              49,
+              32,
+              49,
+              57,
+              58,
+              51,
+              50,
+              58,
+              51,
+              49,
+              34,
+              125,
+              93
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 247
+        },
+        "id": "2c490152-05d4-4b0f-8e92-9e1bb5896597",
+        "assertions": [
+          {
+            "assertion": "Status 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Retorna uma lista",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "bba6c9de-ae09-4d41-b108-f12902e78822",
+          "length": 12,
+          "cycles": 1,
+          "position": 6,
+          "iteration": 0,
+          "httpRequestId": "b4ecab9c-ab93-4749-afb5-1974c96bd920"
+        },
+        "item": {
+          "id": "19424d7b-af89-4403-a668-d833ad8cefb5",
+          "name": "07 - CT-019 Editar evento",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "events",
+                "{{eventId}}"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Feira de Tecnologia Atualizada\",\n  \"descricao\": \"Evento atualizado sobre inovação e tecnologia\",\n  \"data\": \"2026-10-25\",\n  \"horario\": \"20:00\",\n  \"local\": \"Centro de Convenções Ulysses Guimarães\",\n  \"vagas\": 150,\n  \"status\": \"Ativo\"\n}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "type": "string",
+                  "value": "{{token}}",
+                  "key": "token"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "75828986-c2de-4565-8168-8b5ecbf52a7d",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Nome atualizado', function () { pm.expect(pm.response.json().event.nome).to.include('Atualizada'); });"
+                ],
+                "_lastExecutionId": "08db7a21-01cc-4aea-b081-6cee964c4add"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "events",
+              "1"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Authorization",
+              "value": "Bearer [TOKEN_DE_TESTE_REMOVIDO]",
+              "system": true
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "73611ba5-3d34-485a-a0a0-c5bdedbdbdf2",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "251",
+              "system": true
+            }
+          ],
+          "method": "PUT",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"nome\": \"Feira de Tecnologia Atualizada\",\n  \"descricao\": \"Evento atualizado sobre inovação e tecnologia\",\n  \"data\": \"2026-10-25\",\n  \"horario\": \"20:00\",\n  \"local\": \"Centro de Convenções Ulysses Guimarães\",\n  \"vagas\": 150,\n  \"status\": \"Ativo\"\n}"
+          },
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "[TOKEN_DE_TESTE_REMOVIDO]",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": {
+          "id": "84146e93-7e15-4011-9cd0-4791f492cfcf",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "352"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"160-5kYsAz4XHAuHl1gtrsx+WORD0qs\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 21 Oct 2026 19:32:31 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              69,
+              118,
+              101,
+              110,
+              116,
+              111,
+              32,
+              97,
+              116,
+              117,
+              97,
+              108,
+              105,
+              122,
+              97,
+              100,
+              111,
+              32,
+              99,
+              111,
+              109,
+              32,
+              115,
+              117,
+              99,
+              101,
+              115,
+              115,
+              111,
+              46,
+              34,
+              44,
+              34,
+              101,
+              118,
+              101,
+              110,
+              116,
+              34,
+              58,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              110,
+              111,
+              109,
+              101,
+              34,
+              58,
+              34,
+              70,
+              101,
+              105,
+              114,
+              97,
+              32,
+              100,
+              101,
+              32,
+              84,
+              101,
+              99,
+              110,
+              111,
+              108,
+              111,
+              103,
+              105,
+              97,
+              32,
+              65,
+              116,
+              117,
+              97,
+              108,
+              105,
+              122,
+              97,
+              100,
+              97,
+              34,
+              44,
+              34,
+              100,
+              101,
+              115,
+              99,
+              114,
+              105,
+              99,
+              97,
+              111,
+              34,
+              58,
+              34,
+              69,
+              118,
+              101,
+              110,
+              116,
+              111,
+              32,
+              97,
+              116,
+              117,
+              97,
+              108,
+              105,
+              122,
+              97,
+              100,
+              111,
+              32,
+              115,
+              111,
+              98,
+              114,
+              101,
+              32,
+              105,
+              110,
+              111,
+              118,
+              97,
+              195,
+              167,
+              195,
+              163,
+              111,
+              32,
+              101,
+              32,
+              116,
+              101,
+              99,
+              110,
+              111,
+              108,
+              111,
+              103,
+              105,
+              97,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              48,
+              45,
+              50,
+              53,
+              34,
+              44,
+              34,
+              104,
+              111,
+              114,
+              97,
+              114,
+              105,
+              111,
+              34,
+              58,
+              34,
+              50,
+              48,
+              58,
+              48,
+              48,
+              34,
+              44,
+              34,
+              108,
+              111,
+              99,
+              97,
+              108,
+              34,
+              58,
+              34,
+              67,
+              101,
+              110,
+              116,
+              114,
+              111,
+              32,
+              100,
+              101,
+              32,
+              67,
+              111,
+              110,
+              118,
+              101,
+              110,
+              195,
+              167,
+              195,
+              181,
+              101,
+              115,
+              32,
+              85,
+              108,
+              121,
+              115,
+              115,
+              101,
+              115,
+              32,
+              71,
+              117,
+              105,
+              109,
+              97,
+              114,
+              195,
+              163,
+              101,
+              115,
+              34,
+              44,
+              34,
+              118,
+              97,
+              103,
+              97,
+              115,
+              34,
+              58,
+              49,
+              53,
+              48,
+              44,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              34,
+              65,
+              116,
+              105,
+              118,
+              111,
+              34,
+              44,
+              34,
+              99,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              48,
+              45,
+              50,
+              49,
+              32,
+              49,
+              57,
+              58,
+              51,
+              50,
+              58,
+              51,
+              49,
+              34,
+              44,
+              34,
+              117,
+              112,
+              100,
+              97,
+              116,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              48,
+              45,
+              50,
+              49,
+              32,
+              49,
+              57,
+              58,
+              51,
+              50,
+              58,
+              51,
+              49,
+              34,
+              125,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 352
+        },
+        "id": "19424d7b-af89-4403-a668-d833ad8cefb5",
+        "assertions": [
+          {
+            "assertion": "Status 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Nome atualizado",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "631050e0-da2f-4a5d-baa0-3cc946132279",
+          "length": 12,
+          "cycles": 1,
+          "position": 7,
+          "iteration": 0,
+          "httpRequestId": "3ed159d3-853e-4b34-a827-b8048fb25e31"
+        },
+        "item": {
+          "id": "995056fa-1f67-47e5-9926-95c3765e10db",
+          "name": "08 - CT-021 Evento inexistente",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "events",
+                "999999"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "type": "string",
+                  "value": "{{token}}",
+                  "key": "token"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "05d283dc-24fb-463e-874c-ee05ca04cb75",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Evento não encontrado', function () { pm.expect(pm.response.json().message).to.include('não encontrado'); });"
+                ],
+                "_lastExecutionId": "b0587582-fde2-4c15-ae4e-860fec9b7f2b"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "events",
+              "999999"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer [TOKEN_DE_TESTE_REMOVIDO]",
+              "system": true
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "07c8aaba-c84e-4f3b-a12b-32cdedb793ae",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET",
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "[TOKEN_DE_TESTE_REMOVIDO]",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": {
+          "id": "33d86890-911d-4b6e-bf17-a2b66178d9e3",
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "37"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"25-YsNAZ3guwyHpgr8deVx1FAc7n3o\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 21 Oct 2026 19:32:31 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              69,
+              118,
+              101,
+              110,
+              116,
+              111,
+              32,
+              110,
+              195,
+              163,
+              111,
+              32,
+              101,
+              110,
+              99,
+              111,
+              110,
+              116,
+              114,
+              97,
+              100,
+              111,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 37
+        },
+        "id": "995056fa-1f67-47e5-9926-95c3765e10db",
+        "assertions": [
+          {
+            "assertion": "Status 404",
+            "skipped": false
+          },
+          {
+            "assertion": "Evento não encontrado",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "d0e0fe74-4b85-4c82-8b9d-e25be9793535",
+          "length": 12,
+          "cycles": 1,
+          "position": 8,
+          "iteration": 0,
+          "httpRequestId": "8a9d3e72-7578-4b3c-8a40-aa4f76fd0d60"
+        },
+        "item": {
+          "id": "1fd3903f-37f6-48c3-9713-8c03265ff84b",
+          "name": "09 - CT-020 Excluir evento",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "events",
+                "{{eventId}}"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "DELETE",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "type": "string",
+                  "value": "{{token}}",
+                  "key": "token"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "dcda1ca4-82ec-4225-a4c9-e4a633c08ba5",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Exclusão concluída', function () { pm.expect(pm.response.json().message).to.include('excluído'); });"
+                ],
+                "_lastExecutionId": "894dba8e-583b-4410-9dc3-c8067c32823c"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "events",
+              "1"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer [TOKEN_DE_TESTE_REMOVIDO]",
+              "system": true
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "26ba2d7f-4e94-4866-9997-d40f6d46af74",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "DELETE",
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "[TOKEN_DE_TESTE_REMOVIDO]",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": {
+          "id": "f9dd9bb0-d287-4b40-8de9-0dbb2c13ddac",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "43"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"2b-yB3EzAE8KaT+c1DY6AtZVvYKZ1U\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 21 Oct 2026 19:32:31 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              69,
+              118,
+              101,
+              110,
+              116,
+              111,
+              32,
+              101,
+              120,
+              99,
+              108,
+              117,
+              195,
+              173,
+              100,
+              111,
+              32,
+              99,
+              111,
+              109,
+              32,
+              115,
+              117,
+              99,
+              101,
+              115,
+              115,
+              111,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 4,
+          "responseSize": 43
+        },
+        "id": "1fd3903f-37f6-48c3-9713-8c03265ff84b",
+        "assertions": [
+          {
+            "assertion": "Status 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Exclusão concluída",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "7da28406-7351-4859-9245-37f9ca3cda14",
+          "length": 12,
+          "cycles": 1,
+          "position": 9,
+          "iteration": 0,
+          "httpRequestId": "b5e1f866-89d3-4b82-835b-1ae5e8e4b62e"
+        },
+        "item": {
+          "id": "bcf0fb27-a353-464d-a6f2-71d13de8fa44",
+          "name": "CT-035 Rejeita horario inválido",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "events"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nome\": \"Feira de Tecnologia\", \"descricao\": \"Evento sobre inovação e tecnologia\", \"data\": \"2026-10-25\", \"horario\": \"99:99\", \"local\": \"Brasília\", \"vagas\": 100, \"status\": \"Ativo\"}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "type": "string",
+                  "value": "{{token}}",
+                  "key": "token"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "d46909c6-e7ca-432a-9286-25ad383e2a42",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rejeita dados inválidos',()=>pm.response.to.have.status(400));"
+                ],
+                "_lastExecutionId": "be0a95ab-6ac7-43f1-ad79-cceae9005764"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "events"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Authorization",
+              "value": "Bearer [TOKEN_DE_TESTE_REMOVIDO]",
+              "system": true
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "0675b1f6-d2ab-4b52-b454-822a69f61ac8",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "181",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\"nome\": \"Feira de Tecnologia\", \"descricao\": \"Evento sobre inovação e tecnologia\", \"data\": \"2026-10-25\", \"horario\": \"99:99\", \"local\": \"Brasília\", \"vagas\": 100, \"status\": \"Ativo\"}"
+          },
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "[TOKEN_DE_TESTE_REMOVIDO]",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": {
+          "id": "08326148-1e8c-44fe-85d0-1f13ba51256f",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "148"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"94-yWSVOaKCJlr2p8LMPgPaUhnTjGs\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 21 Oct 2026 19:32:31 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              79,
+              32,
+              104,
+              111,
+              114,
+              195,
+              161,
+              114,
+              105,
+              111,
+              32,
+              100,
+              101,
+              118,
+              101,
+              32,
+              101,
+              115,
+              116,
+              97,
+              114,
+              32,
+              110,
+              111,
+              32,
+              102,
+              111,
+              114,
+              109,
+              97,
+              116,
+              111,
+              32,
+              72,
+              72,
+              58,
+              109,
+              109,
+              44,
+              32,
+              101,
+              110,
+              116,
+              114,
+              101,
+              32,
+              48,
+              48,
+              58,
+              48,
+              48,
+              32,
+              101,
+              32,
+              50,
+              51,
+              58,
+              53,
+              57,
+              46,
+              34,
+              44,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              34,
+              58,
+              91,
+              34,
+              79,
+              32,
+              104,
+              111,
+              114,
+              195,
+              161,
+              114,
+              105,
+              111,
+              32,
+              100,
+              101,
+              118,
+              101,
+              32,
+              101,
+              115,
+              116,
+              97,
+              114,
+              32,
+              110,
+              111,
+              32,
+              102,
+              111,
+              114,
+              109,
+              97,
+              116,
+              111,
+              32,
+              72,
+              72,
+              58,
+              109,
+              109,
+              44,
+              32,
+              101,
+              110,
+              116,
+              114,
+              101,
+              32,
+              48,
+              48,
+              58,
+              48,
+              48,
+              32,
+              101,
+              32,
+              50,
+              51,
+              58,
+              53,
+              57,
+              46,
+              34,
+              93,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 148
+        },
+        "id": "bcf0fb27-a353-464d-a6f2-71d13de8fa44",
+        "assertions": [
+          {
+            "assertion": "Rejeita dados inválidos",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "82426045-528f-4142-b803-51ce864d31d2",
+          "length": 12,
+          "cycles": 1,
+          "position": 10,
+          "iteration": 0,
+          "httpRequestId": "ebb237c6-f9a8-430d-8de4-b35f321b510e"
+        },
+        "item": {
+          "id": "1eef236c-e16c-464d-97e6-1f07096cde5c",
+          "name": "CT-036 Rejeita status inválido",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "events"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nome\": \"Feira de Tecnologia\", \"descricao\": \"Evento sobre inovação e tecnologia\", \"data\": \"2026-10-25\", \"horario\": \"19:00\", \"local\": \"Brasília\", \"vagas\": 100, \"status\": \"Inventado\"}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "type": "string",
+                  "value": "{{token}}",
+                  "key": "token"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "5c5a41ea-bacb-4626-9b8e-2b5ef7d56d28",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rejeita dados inválidos',()=>pm.response.to.have.status(400));"
+                ],
+                "_lastExecutionId": "d2cb18be-03ef-4612-895c-4c9ede3e3b72"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "events"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Authorization",
+              "value": "Bearer [TOKEN_DE_TESTE_REMOVIDO]",
+              "system": true
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "fbf607ec-d442-46ec-80d6-5de9814aa850",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "185",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\"nome\": \"Feira de Tecnologia\", \"descricao\": \"Evento sobre inovação e tecnologia\", \"data\": \"2026-10-25\", \"horario\": \"19:00\", \"local\": \"Brasília\", \"vagas\": 100, \"status\": \"Inventado\"}"
+          },
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "[TOKEN_DE_TESTE_REMOVIDO]",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": {
+          "id": "8959096a-9189-4168-b0f5-ad2e08db7e04",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "122"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"7a-t2SqV10/K2NRlYsasgQFYk0n5o4\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 21 Oct 2026 19:32:31 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              79,
+              32,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              32,
+              100,
+              101,
+              118,
+              101,
+              32,
+              115,
+              101,
+              114,
+              32,
+              65,
+              116,
+              105,
+              118,
+              111,
+              44,
+              32,
+              73,
+              110,
+              97,
+              116,
+              105,
+              118,
+              111,
+              32,
+              111,
+              117,
+              32,
+              67,
+              111,
+              110,
+              99,
+              108,
+              117,
+              195,
+              173,
+              100,
+              111,
+              46,
+              34,
+              44,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              34,
+              58,
+              91,
+              34,
+              79,
+              32,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              32,
+              100,
+              101,
+              118,
+              101,
+              32,
+              115,
+              101,
+              114,
+              32,
+              65,
+              116,
+              105,
+              118,
+              111,
+              44,
+              32,
+              73,
+              110,
+              97,
+              116,
+              105,
+              118,
+              111,
+              32,
+              111,
+              117,
+              32,
+              67,
+              111,
+              110,
+              99,
+              108,
+              117,
+              195,
+              173,
+              100,
+              111,
+              46,
+              34,
+              93,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 122
+        },
+        "id": "1eef236c-e16c-464d-97e6-1f07096cde5c",
+        "assertions": [
+          {
+            "assertion": "Rejeita dados inválidos",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "c55e659a-d5aa-4db9-b1a8-0acb893db914",
+          "length": 12,
+          "cycles": 1,
+          "position": 11,
+          "iteration": 0,
+          "httpRequestId": "bcafa540-30b4-4ee7-a353-666722380af5"
+        },
+        "item": {
+          "id": "b3856698-b8fb-4986-becb-6d3ccd2b28a3",
+          "name": "CT-037 Bloqueia API sem token",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "events"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "a3410cc9-ed5a-498a-a23d-a5dbb3326b27",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Sem token retorna 401',()=>pm.response.to.have.status(401));"
+                ],
+                "_lastExecutionId": "26de5405-9582-49e5-aba6-06224fe5df1d"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "events"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "c2acf5dd-147d-45c2-86a6-8e4038b92934",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "560737bc-4387-4e79-9694-43a8e47c0d1c",
+          "status": "Unauthorized",
+          "code": 401,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "42"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"2a-JaJ0MSIf3Wa+H9zqHjNhrL+Mq0s\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 21 Oct 2026 19:32:31 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              65,
+              117,
+              116,
+              101,
+              110,
+              116,
+              105,
+              99,
+              97,
+              195,
+              167,
+              195,
+              163,
+              111,
+              32,
+              111,
+              98,
+              114,
+              105,
+              103,
+              97,
+              116,
+              195,
+              179,
+              114,
+              105,
+              97,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 2,
+          "responseSize": 42
+        },
+        "id": "b3856698-b8fb-4986-becb-6d3ccd2b28a3",
+        "assertions": [
+          {
+            "assertion": "Sem token retorna 401",
+            "skipped": false
+          }
+        ]
+      }
+    ],
+    "transfers": {
+      "responseTotal": 1707
+    },
+    "failures": [],
+    "error": null
+  }
+}
